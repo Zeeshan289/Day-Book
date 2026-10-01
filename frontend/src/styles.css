@@ -1,0 +1,693 @@
+/* Day Book styles.
+   Based on the printed day book: quiet app chrome, and one "special" part, the ledger spread. */
+
+:root {
+  --desk: #EEF1F4;      /* page background */
+  --paper: #FFFFFF;
+  --rule: #D6DEE7;      /* ruled lines */
+  --band: #5B4632;      /* brown header band */
+  --ink: #1E3A8A;       /* blue pen */
+  --red: #C0322B;       /* red ink: credit entries, errors */
+  --text: #1D232B;
+  --muted: #66707C;
+  --ok: #1F6B45;
+  --warn-bg: #FFF4DB;
+  --warn-line: #E0B458;
+
+  --font: 'Barlow', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-title: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  --radius: 6px;
+  --row: 2.1rem;        /* height of one ruled line */
+  --shadow: 0 1px 2px rgba(29, 35, 43, 0.08), 0 2px 8px rgba(29, 35, 43, 0.06);
+}
+
+/* ---------- Base ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--desk);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+h1, h2, h3 { margin: 0; line-height: 1.2; }
+h1 { font-family: var(--font-title); font-weight: 700; font-size: 1.9rem; }
+h2 { font-size: 1.15rem; font-weight: 600; }
+h3 { font-size: 1rem; font-weight: 600; }
+p { margin: 0 0 0.75rem; }
+small { font-size: 0.82em; }
+
+a { color: var(--ink); }
+a:hover { text-decoration-thickness: 2px; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+
+/* Visible keyboard focus everywhere. */
+:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.num, .rs, .ps, .money { font-variant-numeric: tabular-nums; }
+.num { text-align: right; white-space: nowrap; }
+.muted { color: var(--muted); }
+.nowrap { white-space: nowrap; }
+.stack { display: flex; flex-direction: column; gap: 0.75rem; }
+.stack > p { margin: 0; }
+.red, .error { color: var(--red); }
+.error { margin: 0; font-weight: 500; }
+.notice { color: var(--ok); font-weight: 500; margin: 0; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.boot {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-family: var(--font-title);
+  font-size: 1.4rem;
+}
+
+/* ---------- App shell ---------- */
+.shell { min-height: 100vh; display: flex; flex-direction: column; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 1.25rem;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.brand { display: flex; flex-direction: column; line-height: 1.1; }
+.brand-name { font-family: var(--font-title); font-weight: 700; font-size: 1.35rem; color: var(--band); }
+.brand-sub { font-size: 0.8rem; color: var(--muted); }
+
+.nav { display: flex; gap: 0.25rem; flex: 1; overflow-x: auto; scrollbar-width: none; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.nav a:hover { background: var(--desk); }
+.nav a.active { background: var(--band); color: #fff; }
+
+.who { display: flex; align-items: center; gap: 0.75rem; font-size: 0.92rem; }
+.who small { color: var(--muted); }
+
+.btn-link {
+  background: none;
+  border: 0;
+  padding: 0.25rem;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1.25rem 1.25rem 3rem;
+}
+
+/* ---------- Page building blocks ---------- */
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.page-head .sub { color: var(--muted); margin: 0.15rem 0 0; }
+
+.panel {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+}
+.panel > h2 { margin-bottom: 0.75rem; }
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 0.5rem 1rem; flex-wrap: wrap; margin-bottom: 0.75rem;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.6rem 0.75rem;
+  margin-bottom: 1rem;
+}
+.toolbar .field { min-width: 9rem; }
+.toolbar .grow { flex: 1; min-width: 12rem; }
+
+.row-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+/* Grid for simple forms outside the entry form. */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.two-col > .panel { margin-bottom: 0; }
+
+/* ---------- Form fields ---------- */
+.field { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.field > span { font-size: 0.88rem; font-weight: 500; color: var(--text); }
+.field > span small { color: var(--muted); font-weight: 400; }
+
+.field input, .field select, .field textarea, .field .computed {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.6rem;
+  background: var(--paper);
+  border: 1px solid #B9C4D0;
+  border-radius: var(--radius);
+}
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+  border-color: var(--ink);
+}
+.field .computed {
+  display: flex;
+  align-items: center;
+  background: var(--desk);
+  color: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.field.check { flex-direction: row; align-items: center; gap: 0.5rem; }
+.field.check input { width: auto; min-height: 0; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 1rem;
+  border: 1px solid #B9C4D0;
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.btn:hover { background: var(--desk); }
+.btn.primary { background: var(--band); border-color: var(--band); color: #fff; }
+.btn.primary:hover { background: #47362A; }
+.btn.ghost { background: transparent; border-color: transparent; color: var(--ink); }
+.btn.ghost:hover { background: var(--desk); }
+.btn.danger { color: var(--red); border-color: #E5B3B0; }
+.btn.danger:hover { background: #FBEDEC; }
+.btn.small { min-height: 2rem; padding: 0.2rem 0.65rem; font-size: 0.88rem; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.icon-btn {
+  width: 2.25rem; height: 2.25rem;
+  display: grid; place-items: center;
+  border: 0; border-radius: var(--radius);
+  background: transparent;
+  font-size: 1.5rem; line-height: 1;
+  cursor: pointer; color: var(--muted);
+}
+.icon-btn:hover { background: var(--desk); color: var(--text); }
+
+/* ---------- Entry form ---------- */
+.entry-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: end;
+}
+.entry-form .span-2 { grid-column: span 2; }
+.entry-form .span-all, .entry-form .side-toggle { grid-column: 1 / -1; }
+
+.side-toggle {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 22rem;
+  border: 1px solid #B9C4D0;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.side-toggle button {
+  min-height: 2.5rem;
+  padding: 0.4rem 1rem;
+  border: 0;
+  background: var(--paper);
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.side-toggle button + button { border-left: 1px solid #B9C4D0; }
+.side-toggle button.on { color: #fff; }
+.side-toggle button.on.in { background: var(--ink); }
+.side-toggle button.on.out { background: var(--band); }
+
+.actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.5rem; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0; z-index: 50;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding: 4vh 1rem;
+  background: rgba(29, 35, 43, 0.45);
+  overflow-y: auto;
+}
+.modal {
+  width: 100%;
+  max-width: 34rem;
+  background: var(--paper);
+  border-radius: 8px;
+  padding: 1rem 1.25rem 1.25rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+.modal.wide { max-width: 52rem; }
+.modal:focus { outline: none; } /* focus lands here only when the dialog has nothing to focus */
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin: -0.25rem 0 0.9rem;
+}
+.modal .entry-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.modal .entry-form .span-2 { grid-column: 1 / -1; }
+.modal-section { border-top: 1px solid var(--rule); margin-top: 1rem; padding-top: 1rem; }
+
+/* ---------- Plain data tables ---------- */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table-wrap.spaced { margin-top: 1rem; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.table th, .table td { padding: 0.5rem 0.6rem; text-align: left; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.table th { font-size: 0.85rem; font-weight: 600; color: var(--muted); background: #F7F9FB; white-space: nowrap; }
+.table th.num, .table td.num { text-align: right; }
+.table tr.inactive td { color: var(--muted); }
+.table tfoot td { font-weight: 600; border-top: 2px solid var(--text); border-bottom: 0; }
+.table .empty { color: var(--muted); text-align: center; padding: 1.25rem; }
+.table td.money { color: var(--ink); font-weight: 500; text-align: right; white-space: nowrap; }
+.table td.red { color: var(--red); }
+.table tr.voided td { color: var(--muted); text-decoration: line-through; }
+
+/* Small tag for mode / status / type. */
+.tag {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  color: var(--muted);
+}
+.tag.bank { color: var(--ink); }
+.tag.credit, .tag.bounced { color: var(--red); }
+.tag.cleared { color: var(--ok); }
+.tag.pending { color: var(--band); }
+.tag.inactive { color: var(--muted); }
+
+/* ---------- Summary numbers ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.stat { background: var(--paper); padding: 0.6rem 0.8rem; }
+.stat .label { display: block; font-size: 0.82rem; color: var(--muted); }
+.stat .value {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.stat .value.red { color: var(--red); }
+.stat .detail { display: block; font-size: 0.78rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.two-col + .panel { margin-top: 1rem; }
+.stat .value.neg { color: var(--red); }
+
+/* ---------- Day book page ---------- */
+.date-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.date-bar input[type='date'] {
+  min-height: 2.5rem; padding: 0.35rem 0.5rem;
+  border: 1px solid #B9C4D0; border-radius: var(--radius); background: var(--paper);
+}
+
+.new-entry > h2 { margin-bottom: 0.75rem; }
+
+/* The ledger spread: two facing pages of the book. */
+.spread {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 1rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+/* The gutter (spine) between the two pages. */
+.spread > .sheet + .sheet { border-left: 3px double #C3CDD8; }
+
+.sheet { min-width: 0; padding: 0.9rem 0 0; }
+.sheet > h2 {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--band);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.ledger {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.95rem;
+}
+.ledger col.c-mode { width: 4.25rem; }
+.ledger col.c-rs { width: 6.5rem; }
+.ledger col.c-ps { width: 2.6rem; }
+
+.ledger thead th {
+  background: var(--band);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+.ledger thead th.rs, .ledger thead th.ps { text-align: center; }
+.ledger thead th + th { border-left: 1px solid rgba(255, 255, 255, 0.35); }
+
+.ledger td {
+  height: var(--row);
+  padding: 0.3rem 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+/* Vertical money rules, like the printed columns. */
+.ledger td.mode, .ledger td.rs, .ledger td.ps { border-left: 1px solid var(--rule); }
+.ledger td.rs { text-align: right; color: var(--ink); font-weight: 500; white-space: nowrap; }
+.ledger td.ps { text-align: center; color: var(--ink); padding-left: 0.2rem; padding-right: 0.2rem; }
+
+.ledger .desc { color: var(--ink); overflow-wrap: anywhere; }
+.ledger .desc .sub { display: block; font-size: 0.8rem; color: var(--muted); line-height: 1.25; }
+.ledger td.mode { text-align: center; padding-left: 0.2rem; padding-right: 0.2rem; }
+
+.ledger tr.bf td, .ledger tr.cf td { font-weight: 600; }
+.ledger tr.bf .desc, .ledger tr.cf .desc { color: var(--text); }
+
+/* Credit entries in red ink. Not counted in totals. */
+.ledger tr.credit td, .ledger tr.credit .desc { color: var(--red); }
+.ledger tr.credit .desc .sub { color: #B36A66; }
+
+/* Cancelled entries stay visible, struck through. */
+.ledger tr.voided td { color: var(--muted); }
+.ledger tr.voided .desc { color: var(--muted); }
+.ledger tr.voided .desc .main-text,
+.ledger tr.voided td.rs,
+.ledger tr.voided td.ps { text-decoration: line-through; }
+.ledger .void-note { display: block; font-size: 0.78rem; color: var(--red); text-decoration: none; }
+
+.ledger tr.clickable { cursor: pointer; }
+.ledger tr.clickable:hover td { background: #F4F7FB; }
+.ledger tr.clickable:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; }
+
+.ledger tfoot td {
+  font-weight: 700;
+  border-top: 2px solid var(--text);
+  border-bottom: 3px double var(--text);
+  background: #FAFBFC;
+}
+.ledger tfoot .desc { color: var(--text); }
+
+.print-only { display: none; }
+
+/* ---------- Cheques ---------- */
+.table tr.due td { background: var(--warn-bg); }
+.table tr.due td:first-child { box-shadow: inset 4px 0 0 var(--warn-line); }
+.table tr.overdue td { background: #FBEDEC; }
+.table tr.overdue td:first-child { box-shadow: inset 4px 0 0 var(--red); }
+.due-note { display: block; font-size: 0.8rem; font-weight: 600; color: var(--band); }
+.overdue .due-note { color: var(--red); }
+
+/* ---------- Settings ---------- */
+.cat-list { list-style: none; margin: 0; padding: 0; }
+.cat-list li {
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+  padding: 0.4rem 0; border-bottom: 1px solid var(--rule);
+}
+.cat-list form { flex: 1; flex-wrap: nowrap; }
+.cat-list li.inactive .name { color: var(--muted); text-decoration: line-through; }
+.cat-list input { min-height: 2rem; padding: 0.2rem 0.5rem; border: 1px solid #B9C4D0; border-radius: var(--radius); flex: 1; min-width: 0; }
+
+.audit-change { font-size: 0.82rem; color: var(--muted); overflow-wrap: anywhere; }
+
+/* ---------- Ledgers page and person ledger ---------- */
+.tabs {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--band);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: transparent;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.tab:hover { color: var(--text); background: var(--paper); }
+.tab.on { background: var(--band); border-color: var(--band); color: #fff; }
+
+.cell-sub { display: block; font-size: 0.8rem; color: var(--muted); }
+/* inline-block so the line-through of a cancelled row does not cross out the reason */
+.table .void-note { display: inline-block; width: 100%; font-size: 0.78rem; color: var(--red); }
+.table tr.opening-row td { font-weight: 600; background: #FAFBFC; }
+.small-print { font-size: 0.82rem; }
+
+fieldset.opening {
+  margin: 0;
+  padding: 0.75rem 0.9rem 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+fieldset.opening legend { padding: 0 0.35rem; font-weight: 600; font-size: 0.92rem; }
+fieldset.opening legend small { color: var(--muted); font-weight: 400; }
+
+/* On phones, ledger tables show each line as a small card instead of scrolling sideways:
+   date and description on the left; amounts and balance on the right, each with its label. */
+@media screen and (max-width: 640px) {
+  .stack-table, .stack-table tbody, .stack-table tfoot { display: block; }
+  .stack-table thead { display: none; }
+  .stack-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "date in" "desc out" "desc bal";
+    column-gap: 0.75rem;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .stack-table td,
+  .stack-table tfoot td { display: block; padding: 0; border: 0; }
+  .stack-table .c-date { grid-area: date; font-size: 0.85rem; }
+  .stack-table .c-desc { grid-area: desc; }
+  .stack-table .c-in { grid-area: in; text-align: right; }
+  .stack-table .c-out { grid-area: out; text-align: right; }
+  .stack-table .c-bal { grid-area: bal; text-align: right; font-size: 0.88rem; }
+  .stack-table td[data-label]:not(:empty)::before {
+    content: attr(data-label) " ";
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.8rem;
+  }
+  .stack-table tr.opening-row { background: #FAFBFC; }
+  .stack-table tr.opening-row td { background: none; }
+  .stack-table tfoot tr { border-top: 2px solid var(--text); border-bottom: 0; }
+  .stack-table .empty { grid-column: 1 / -1; }
+}
+
+/* ---------- Printable statement (its own page, no top bar) ---------- */
+.statement { max-width: 52rem; margin: 0 auto; padding: 1rem; }
+.statement-bar { display: flex; justify-content: space-between; gap: 0.5rem; margin-bottom: 1rem; }
+.statement-page {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 6px solid var(--band);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: var(--shadow);
+}
+.statement-head { margin-bottom: 1rem; }
+.statement-business { margin: 0; font-family: var(--font-title); font-weight: 700; font-size: 1.4rem; color: var(--band); }
+.statement-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 0.5rem 1rem;
+  margin: 0.75rem 0 0;
+}
+.statement-meta dt { font-size: 0.8rem; color: var(--muted); }
+.statement-meta dd { margin: 0; font-weight: 500; }
+.statement-owed { margin: 1rem 0 0.4rem; font-size: 1.1rem; font-weight: 600; color: var(--ink); }
+.statement-owed.red { color: var(--red); }
+
+/* ---------- Login ---------- */
+.login {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+.login-card {
+  width: 100%;
+  max-width: 22rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-top: 6px solid var(--band);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.login-card h1 { color: var(--band); }
+.login-card .btn { width: 100%; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .entry-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .entry-form .span-2 { grid-column: 1 / -1; }
+  .two-col { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 820px) {
+  /* Pages stack on small screens: receipts, then payments. */
+  .spread { grid-template-columns: 1fr; }
+  .spread > .sheet + .sheet { border-left: 0; border-top: 3px double #C3CDD8; margin-top: 0.5rem; }
+}
+
+@media (max-width: 640px) {
+  .topbar { padding: 0.5rem 0.75rem; gap: 0.5rem 1rem; }
+  .nav { order: 3; flex-basis: 100%; }
+  .who { margin-left: auto; }
+  .main { padding: 1rem 0.75rem 2.5rem; }
+  h1 { font-size: 1.6rem; }
+  .panel { padding: 0.85rem; }
+  .entry-form { grid-template-columns: 1fr; }
+  .modal .entry-form { grid-template-columns: 1fr; }
+  .side-toggle { max-width: none; }
+  .ledger { font-size: 0.9rem; }
+  .ledger col.c-mode { width: 3.5rem; }
+  .ledger col.c-rs { width: 5.5rem; }
+  .ledger col.c-ps { width: 2.2rem; }
+  .ledger td, .ledger thead th { padding-left: 0.4rem; padding-right: 0.4rem; }
+  .toolbar .field { min-width: 0; flex: 1 1 8rem; }
+  .modal { padding: 0.9rem; }
+  .tab { padding: 0.45rem 0.7rem; }
+  .statement { padding: 0.75rem; }
+  .statement-page { padding: 1rem 0.85rem; }
+  .row-actions .btn { flex: 1 1 auto; }
+}
+
+@media (max-width: 400px) {
+  .date-bar { width: 100%; }
+  .date-bar input[type='date'] { flex: 1; min-width: 0; }
+  /* Room for amounts like 12,345,678 in the Rs. column on a 360px phone. */
+  .ledger col.c-mode { width: 2.9rem; }
+  .ledger col.c-rs { width: 5.6rem; }
+  .ledger col.c-ps { width: 1.9rem; }
+  .ledger td.rs, .ledger td.ps { font-size: 0.85rem; }
+  .ledger td.rs { padding-left: 0.25rem; padding-right: 0.3rem; }
+  .ledger td.ps, .ledger td.mode { padding-left: 0.1rem; padding-right: 0.1rem; }
+  .ledger .tag { font-size: 0.68rem; padding: 0 0.3rem; }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Print: only the ledger spread and totals ---------- */
+@media print {
+  @page { margin: 12mm; }
+  body { background: #fff; font-size: 11pt; }
+  .topbar, .no-print, .modal-backdrop { display: none !important; }
+  .main { max-width: none; padding: 0; }
+  .print-only { display: block; }
+  .page-head { margin-bottom: 0.5rem; }
+  .stats { break-inside: avoid; margin-bottom: 0.6rem; border-color: #999; }
+  .stat .value { font-size: 1rem; }
+  .spread {
+    grid-template-columns: 1fr 1fr;
+    box-shadow: none;
+    border: 1px solid #999;
+  }
+  .spread > .sheet + .sheet { border-top: 0; margin-top: 0; border-left: 3px double #999; }
+  .ledger tr { break-inside: avoid; }
+  .ledger thead th {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .ledger tr.credit td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .ledger tr.clickable:hover td { background: none; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Ledgers, person ledger and statement: show whole tables, no boxes or shadows. */
+  .table-wrap { overflow: visible; }
+  .panel { box-shadow: none; border-color: #999; break-inside: auto; }
+  .table { font-size: 9.5pt; }
+  .table th, .table td { padding: 0.25rem 0.4rem; }
+  .table tr { break-inside: avoid; }
+  .table thead { display: table-header-group; } /* repeat headings on each printed page */
+  .two-col { grid-template-columns: 1fr 1fr; }
+  .statement { max-width: none; padding: 0; }
+  .statement-page { border: 0; box-shadow: none; padding: 0; }
+  .statement-page .table td.red, .statement-owed.red { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
